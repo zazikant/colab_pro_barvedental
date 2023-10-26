@@ -26,7 +26,7 @@ app = App(token=SLACK_BOT_TOKEN)
 
 # Initialize the Flask app
 flask_app = Flask(__name__)
-run_with_ngrok(flask_app)
+# run_with_ngrok(flask_app)
 handler = SlackRequestHandler(app)
 
 # Initialize variables to store the result of draft_email

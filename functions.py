@@ -145,7 +145,7 @@ def draft_email(user_input):
     
     docs = db.similarity_search(content, k=4)
     
-    #---------------- retrival chain
+    #----------------
    
     prompt_template = """You are a helpful assistant for our dental clinic.for any answer that you do no know, strictly say "DON'T KNOW" without adding any additional context or explaination. Answer all questions factually only.
 
@@ -159,41 +159,37 @@ def draft_email(user_input):
     
     from langchain.chains import RetrievalQA
 
-    chain_type_kwargs = {"prompt": PROMPT} 
+    chain_type_kwargs = {"prompt": PROMPT}
+    
+    from langchain.memory import ConversationBufferMemory
 
-    qa = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
+    memory = ConversationBufferMemory(
+        memory_key="chat_history", return_messages=True, output_key="answer"
+    )
+    
+    from langchain.chains import ConversationalRetrievalChain
+
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=llm,chain_type="stuff",
+        memory=memory,
         retriever=db.as_retriever(),
-        chain_type_kwargs=chain_type_kwargs,
+        combine_docs_chain_kwargs=chain_type_kwargs,
     )
 
     query = content
     response = qa.run({"question": query})
 
-    #----------------
-    
-    #---------------- memory conversation chain
-    
-    # from langchain.memory import ConversationBufferMemory
-
-    # memory = ConversationBufferMemory(
-    #     memory_key="chat_history", return_messages=True, output_key="answer"
-    # )
-    
-    # from langchain.chains import ConversationalRetrievalChain
-
-    # qa = ConversationalRetrievalChain.from_llm(
-    #     llm=llm,chain_type="stuff",
-    #     memory=memory,
+    # qa = RetrievalQA.from_chain_type(
+    #     llm=llm,
+    #     chain_type="stuff",
     #     retriever=db.as_retriever(),
-    #     combine_docs_chain_kwargs=chain_type_kwargs,
+    #     chain_type_kwargs=chain_type_kwargs,
     # )
 
     # query = content
-    # response = qa.run({"question": query})
-    
-    #-------------- standard load summarise map reduce chain
+    # response = qa.run(query)
+
+    #----------------
 
 
     # template = """
