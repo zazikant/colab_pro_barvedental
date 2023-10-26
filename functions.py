@@ -197,7 +197,7 @@ def draft_email(user_input):
         chain_type_kwargs=chain_type_kwargs,
     )
 
-    query = "list down all treatments that you offer"
+    query = content
     response = qa.run(query)
 
     #----------------
