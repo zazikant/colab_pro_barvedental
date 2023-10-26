@@ -189,16 +189,34 @@ def draft_email(user_input):
     from langchain.chains import RetrievalQA
 
     chain_type_kwargs = {"prompt": PROMPT}
+    
+    from langchain.memory import ConversationBufferMemory
 
-    qa = RetrievalQA.from_chain_type(
-        llm=llm,
-        chain_type="stuff",
+    memory = ConversationBufferMemory(
+        memory_key="chat_history", return_messages=True, output_key="answer"
+    )
+    
+    from langchain.chains import ConversationalRetrievalChain
+
+    qa = ConversationalRetrievalChain.from_llm(
+        llm=llm,chain_type="stuff",
+        memory=memory,
         retriever=db.as_retriever(),
-        chain_type_kwargs=chain_type_kwargs,
+        combine_docs_chain_kwargs=chain_type_kwargs,
     )
 
     query = content
-    response = qa.run(query)
+    response = qa.run({"question": query})
+
+    # qa = RetrievalQA.from_chain_type(
+    #     llm=llm,
+    #     chain_type="stuff",
+    #     retriever=db.as_retriever(),
+    #     chain_type_kwargs=chain_type_kwargs,
+    # )
+
+    # query = content
+    # response = qa.run(query)
 
     #----------------
 
