@@ -101,40 +101,11 @@ def parser(text):
 def draft_email(user_input):
     
     llm = OpenAI(model="gpt-3.5-turbo-instruct", temperature=0.7)
-    
-    #--- convert to UTF8
-    
-        # Function to convert a file to UTF-8 encoding
-    def convert_to_utf8(input_file_path, output_file_path):
-        with open(input_file_path, "r", encoding="CURRENT_ENCODING") as infile:
-            content = infile.read()
-        with open(output_file_path, "w", encoding="utf-8") as outfile:
-            outfile.write(content)
 
-    # Directory containing CSV files
-    directory_path = "./shashi"
-
-    # Iterate through CSV files in the directory and convert them to UTF-8
-    import os
-    for root, dirs, files in os.walk(directory_path):
-        for file in files:
-            if file.endswith(".csv"):
-                input_file_path = os.path.join(root, file)
-                output_file_path = os.path.join(root, f"{file.split('.')[0]}_utf8.csv")
-                convert_to_utf8(input_file_path, output_file_path)
-
-    # Now, load the documents using the DirectoryLoader with the modified CSV files
     loader = DirectoryLoader(
-        directory_path, glob="**/*_utf8.csv", loader_cls=CSVLoader, show_progress=True
+        "./shashi", glob="**/*.csv", loader_cls=CSVLoader, show_progress=True
     )
-    docs = loader.load() 
-        
-    #---  
-
-    # loader = DirectoryLoader(
-    #     "./shashi", glob="**/*.csv", loader_cls=CSVLoader, show_progress=True
-    # )
-    # docs = loader.load()
+    docs = loader.load()
 
     #textsplitter-----------------
 
