@@ -56,7 +56,7 @@ from langchain import PromptTemplate, LLMChain
 
 def parser(text):
  
-    llm = OpenAI()
+    llm = OpenAI(model="gpt-3.5-turbo-instruct", temperature=0.7)
 
     context = text.strip()
 
@@ -99,7 +99,8 @@ def parser(text):
     return output_dict
 
 def draft_email(user_input):
-   
+    
+    llm = OpenAI(model="gpt-3.5-turbo-instruct", temperature=0.7)   
 
     loader = DirectoryLoader(
         "./shashi", glob="**/*.csv", loader_cls=CSVLoader, show_progress=True
@@ -143,12 +144,9 @@ def draft_email(user_input):
     content = parser_output["content"]
     
     docs = db.similarity_search(content, k=4)
-
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.7)
     
-            #----------------
-    from langchain.prompts import PromptTemplate
-
+    #----------------
+   
     prompt_template = """You are a helpful assistant for our dental clinic.for any answer that you do no know, strictly say "DON'T KNOW" without adding any additional context or explaination. Answer all questions factually only.
 
     {context}
@@ -158,8 +156,7 @@ def draft_email(user_input):
     PROMPT = PromptTemplate(
         template=prompt_template, input_variables=["context", "question"]
     )
-
-    from langchain.llms import OpenAI
+    
     from langchain.chains import RetrievalQA
 
     chain_type_kwargs = {"prompt": PROMPT}
