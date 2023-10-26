@@ -175,9 +175,19 @@ def draft_email(user_input):
         retriever=db.as_retriever(),
         combine_docs_chain_kwargs=chain_type_kwargs,
     )
-
+    
     query = content
+    
+    # Add the user input as a user message to the memory
+    memory.add_user_message(content)
+    
     response = qa.run({"question": query})
+    
+    # Extract the AI response
+    ai_response = response["answer"]
+
+    # Add the AI response as an AI message to the memory
+    memory.add_ai_message(ai_response)
 
     # qa = RetrievalQA.from_chain_type(
     #     llm=llm,
